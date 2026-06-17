@@ -1,0 +1,2 @@
+file '/workspace/_render/shot1.mp4'
+file '/workspace/_render/shot2.mp4'
