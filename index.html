@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大排档雨夜对决 · 完整15秒版</title>
+<style>
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(232, 177, 77, 0.15), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(95, 181, 176, 0.12), transparent 60%),
+      linear-gradient(180deg, #1a140c 0%, #0c0a06 100%);
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #f5e9c9;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  h1 {
+    font-size: 32px;
+    letter-spacing: 0.15em;
+    color: #e8b14d;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(232, 177, 77, 0.35);
+  }
+  .subtitle {
+    color: #8a7a55;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    margin-bottom: 40px;
+  }
+  .main-video {
+    border: 2px solid rgba(232, 177, 77, 0.4);
+    border-radius: 8px;
+    box-shadow:
+      0 30px 80px -20px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(232, 177, 77, 0.15),
+      inset 0 0 20px rgba(0, 0, 0, 0.3);
+    background: #000;
+    max-width: 100%;
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+  .info {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid rgba(232, 177, 77, 0.2);
+    border-radius: 6px;
+    background: rgba(20, 16, 10, 0.5);
+  }
+  .info-row {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .info-item {
+    flex: 1;
+    min-width: 120px;
+  }
+  .info-item .label {
+    color: #8a7a55;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .info-item .value {
+    color: #e8b14d;
+    font-size: 22px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .clips {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .clip {
+    border: 1px solid rgba(232, 177, 77, 0.25);
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(10, 8, 6, 0.7);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .clip:hover {
+    transform: translateY(-4px);
+    border-color: rgba(95, 181, 176, 0.5);
+    box-shadow: 0 20px 40px -15px rgba(95, 181, 176, 0.3);
+  }
+  .clip video {
+    width: 100%;
+    display: block;
+    background: #000;
+  }
+  .clip-info {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #d9c89a;
+    letter-spacing: 0.05em;
+  }
+  .clip-info .num {
+    color: #5fb5b0;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>大排档 · 雨夜对决</h1>
+    <div class="subtitle">15 秒 · 动作片风格 · 三段式拼接</div>
+
+    <video class="main-video" controls autoplay loop muted playsinline>
+      <source src="/fight_video_final.mp4" type="video/mp4">
+      您的浏览器不支持视频播放。
+    </video>
+
+    <div class="info">
+      <div class="info-row">
+        <div class="info-item">
+          <div class="label">总时长</div>
+          <div class="value">15 秒</div>
+        </div>
+        <div class="info-item">
+          <div class="label">分辨率</div>
+          <div class="value">1280 × 704</div>
+        </div>
+        <div class="info-item">
+          <div class="label">片段数</div>
+          <div class="value">3 × 5 秒</div>
+        </div>
+        <div class="info-item">
+          <div class="label">文件大小</div>
+          <div class="value">4.2 MB</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clips">
+      <div class="clip">
+        <video controls muted playsinline preload="metadata">
+          <source src="/fight_video_1.mp4" type="video/mp4">
+        </video>
+        <div class="clip-info"><span class="num">SCENE 01</span> · 大排档对峙 · 暖光夜色</div>
+      </div>
+      <div class="clip">
+        <video controls muted playsinline preload="metadata">
+          <source src="/fight_video_2.mp4" type="video/mp4">
+        </video>
+        <div class="clip-info"><span class="num">SCENE 02</span> · 起身动作 · 折叠椅倒地</div>
+      </div>
+      <div class="clip">
+        <video controls muted playsinline preload="metadata">
+          <source src="/fight_video_3.mp4" type="video/mp4">
+        </video>
+        <div class="clip-info"><span class="num">SCENE 03</span> · 冲突爆发 · 啤酒飞溅</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
