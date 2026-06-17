@@ -1,9 +1,10 @@
 /**
  * 大排档武打视频生成脚本
- * 调用 Atlas Cloud Seedance 2.0 文生视频接口
+ * Agnes AI · agnes-video-v2.0
+ * 用 curl 处理请求（自动走代理）
  */
 
-import https from 'https';
+import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -12,210 +13,161 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ==================== 配置 ====================
 const API_KEY = 'sk-A1DFRt7posOIFToIH7EDxgTpimUiEtGYFkPsdZvV5DmnChcs';
-const BASE_URL = 'api.atlascloud.ai';
-const VIDEO_PATH = '/api/v1/model/generateVideo';
-const POLL_PATH = '/api/v1/model/prediction';
+const BASE_URL = 'https://apihub.agnes-ai.com/v1';
+const SUBMIT_URL = `${BASE_URL}/video/generations`;
 
-// Seedance 2.0 视频生成 prompt
-const VIDEO_PROMPT = `
-A cinematic night scene at a bustling Hong Kong-style outdoor food stall (dai pai dong) at night. 
-Rain is dripping from the canvas awning. Two men sit opposite each other at a metal folding table, 
-amber street light casting dramatic shadows. Suddenly, tension erupts — one man in a grey hoodie 
-throws a wild punch, the man in a black jacket dodges and counterattacks with a sweeping kick. 
-Metal folding chairs crash and scatter. Beer mugs shatter, spilling amber liquid across the table. 
-The hanging incandescent bulb swings wildly. People scream and back away. 
-Slow motion, cinematic, dramatic lighting, film grain, martial arts action, 动作片风格.
-`.trim();
+// 大排档武打场景的 prompt
+const VIDEO_PROMPT = 'Two people at a food stall having an intense argument, one person grabs a chair and swings it, the other person dodges quickly, dramatic tension, cinematic night scene, warm amber lights, rainy atmosphere, slow motion action, 动作片风格';
 
-async function httpRequest(method, urlPath, body = null) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: BASE_URL,
-      path: urlPath,
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
-      },
-    };
+/**
+ * 用 curl 发送 HTTP 请求（自动走代理）
+ */
+function curlRequest(method, url, body = null) {
+  const args = ['-s', '-X', method];
 
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        try {
-          resolve({ status: res.statusCode, data: JSON.parse(data) });
-        } catch {
-          resolve({ status: res.statusCode, data: data });
-        }
-      });
+  if (body) {
+    args.push('-H', 'Content-Type: application/json');
+    // 用 process.stdout.write 写入 JSON 到临时文件再传给 curl
+    const bodyFile = `/tmp/curl_body_${Date.now()}.json`;
+    fs.writeFileSync(bodyFile, JSON.stringify(body));
+    args.push('--data-binary', `@${bodyFile}`);
+  }
+
+  args.push('-H', `Authorization: Bearer ${API_KEY}`);
+  args.push(url);
+
+  try {
+    const output = execSync(`curl ${args.join(' ')}`, {
+      encoding: 'utf8',
+      timeout: 30000,
     });
-
-    req.on('error', reject);
-    req.setTimeout(30000, () => { req.destroy(); reject(new Error('Request timeout')); });
-
-    if (body) {
-      req.write(JSON.stringify(body));
-    }
-    req.end();
-  });
-}
-
-async function pollTask(taskId, timeoutMs = 600000) {
-  const startTime = Date.now();
-  let attempts = 0;
-
-  while (Date.now() - startTime < timeoutMs) {
-    attempts++;
-    const pollUrl = `${POLL_PATH}/${taskId}`;
-    console.log(`  [${attempts}] 轮询中...`);
-
+    return JSON.parse(output);
+  } catch (e) {
+    const output = e.stdout || '';
     try {
-      const res = await httpRequest('GET', pollUrl);
-      const status = (res.data?.status || res.data?.state || '').toLowerCase();
-
-      if (['succeeded', 'success', 'done', 'completed'].includes(status)) {
-        // 尝试提取视频 URL
-        const videoUrl =
-          res.data?.url ||
-          res.data?.video_url ||
-          res.data?.data?.url ||
-          res.data?.data?.video_url ||
-          res.data?.data?.output?.url ||
-          res.data?.data?.outputs?.[0];
-
-        if (videoUrl) {
-          console.log(`\n✅ 视频生成成功！`);
-          return videoUrl;
-        }
-        throw new Error('任务成功但未返回视频URL: ' + JSON.stringify(res.data).slice(0, 200));
-      }
-
-      if (['failed', 'error', 'cancelled'].includes(status)) {
-        const errMsg = res.data?.error?.message || res.data?.message || JSON.stringify(res.data);
-        throw new Error('视频生成失败: ' + errMsg);
-      }
-
-      // 进行中，等待后继续
-      console.log(`    状态: ${status}，等待 8 秒...`);
-      await sleep(8000);
-    } catch (e) {
-      if (e.message.includes('timeout') || e.message.includes('ETIMEDOUT') || e.message.includes('ECONNRESET')) {
-        console.log(`    网络抖动，重试...`);
-        await sleep(3000);
-        continue;
-      }
-      throw e;
+      return JSON.parse(output.trim());
+    } catch {
+      throw new Error(`请求失败: ${e.message}，输出: ${output.slice(0, 300)}`);
     }
   }
-  throw new Error(`轮询超时（${timeoutMs / 1000}秒）`);
+}
+
+/**
+ * 下载文件
+ */
+function downloadFile(url, destPath) {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const isHttps = urlObj.protocol === 'https:';
+    const client = isHttps ? 'curl' : 'curl';
+
+    // curl 下载，不需要认证头
+    execSync(`curl -sL -o '${destPath}' '${url}'`, {
+      encoding: 'utf8',
+      timeout: 120000,
+    });
+    resolve();
+  });
 }
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
-async function downloadFile(url, destPath) {
-  return new Promise((resolve, reject) => {
-    // 处理 data URL
-    if (url.startsWith('data:')) {
-      const base64 = url.split(',')[1];
-      fs.writeFileSync(destPath, Buffer.from(base64, 'base64'));
-      resolve();
-      return;
-    }
+async function pollVideo(taskId, maxWaitMs = 600000) {
+  const startTime = Date.now();
+  let attempts = 0;
 
-    // 处理 http/https URL
-    const urlObj = new URL(url);
-    const options = {
-      hostname: urlObj.hostname,
-      path: urlObj.pathname + urlObj.search,
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${API_KEY}` },
-    };
+  while (Date.now() - startTime < maxWaitMs) {
+    attempts++;
+    const pollUrl = `${SUBMIT_URL}/${taskId}`;
+    const elapsedSec = Math.round((Date.now() - startTime) / 1000);
+    console.log(`  [${attempts}] 轮询中...（已等待 ${elapsedSec} 秒）`);
 
-    const req = https.request(options, (res) => {
-      if (res.statusCode === 301 || res.statusCode === 302) {
-        downloadFile(res.headers.location, destPath).then(resolve).catch(reject);
-        return;
+    try {
+      const d = curlRequest('GET', pollUrl);
+
+      const rawStatus = d?.data?.status || d?.status || '';
+      const status = String(rawStatus).toLowerCase();
+      const progress = d?.data?.progress || d?.progress || '?';
+
+      if (status === 'completed' || status === 'success') {
+        // 优先用 CDN 直链，其次用 API 内容接口
+        const videoUrl =
+          d?.data?.remixed_from_video_id ||
+          d?.data?.url ||
+          d?.result_url ||
+          d?.url;
+        console.log(`\n✅ 视频生成成功！`);
+        return { url: videoUrl, id: d?.data?.id || taskId };
       }
 
-      const file = fs.createWriteStream(destPath);
-      res.pipe(file);
-      file.on('finish', () => { file.close(); resolve(); });
-    });
-    req.on('error', reject);
-    req.end();
-  });
+      if (status === 'failed' || status === 'error') {
+        const errMsg = d?.fail_reason || d?.error?.message || JSON.stringify(d).slice(0, 200);
+        throw new Error(`视频生成失败: ${errMsg}`);
+      }
+
+      console.log(`    状态: ${status}，进度: ${progress}%，等待 15 秒...`);
+      await sleep(15000);
+    } catch (e) {
+      if (e.message.includes('timeout') || e.message.includes('ECONNRESET') || e.message.includes('ETIMEDOUT')) {
+        console.log(`    网络抖动，重试...`);
+        await sleep(5000);
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error(`轮询超时（${maxWaitMs / 1000}秒）`);
 }
 
 async function main() {
   console.log('========================================');
   console.log('   大排档 · 雨夜对决 视频生成器');
-  console.log('   Atlas Cloud · Seedance 2.0');
+  console.log('   Agnes AI · agnes-video-v2.0');
   console.log('========================================\n');
 
   // Step 1: 提交视频生成任务
   console.log('📤 提交视频生成任务...');
-  console.log(`📝 Prompt: ${VIDEO_PROMPT.slice(0, 80)}...\n`);
+  console.log(`📝 Prompt: ${VIDEO_PROMPT}\n`);
 
   const body = {
-    model: 'bytedance/seedance-2.0/text-to-video',
+    model: 'agnes-video-v2.0',
     prompt: VIDEO_PROMPT,
-    ratio: '16:9',
-    duration: 5,
-    resolution: '720p',
-    watermark: false,
-    generate_audio: false,
   };
 
-  const submitRes = await httpRequest('POST', VIDEO_PATH, body);
-  console.log(`📨 服务器响应: HTTP ${submitRes.status}`);
-  console.log(`📦 原始数据: ${JSON.stringify(submitRes.data).slice(0, 300)}\n`);
+  const submitRes = curlRequest('POST', SUBMIT_URL, body);
+  console.log(`📦 响应: ${JSON.stringify(submitRes).slice(0, 500)}\n`);
 
   // 提取 taskId
-  const taskId =
-    submitRes.data?.id ||
-    submitRes.data?.taskId ||
-    submitRes.data?.task_id ||
-    submitRes.data?.data?.id;
-
+  const taskId = submitRes?.task_id || submitRes?.id || submitRes?.data?.task_id;
   if (!taskId) {
-    // 检查是否有同步返回的视频URL
-    const syncUrl = submitRes.data?.url || submitRes.data?.video_url || submitRes.data?.data?.url;
-    if (syncUrl) {
-      console.log('🔗 同步返回视频URL，直接下载...\n');
-      const outPath = path.join(__dirname, 'fight-video.mp4');
-      await downloadFile(syncUrl, outPath);
-      console.log(`\n✅ 视频已保存: ${outPath}`);
-      console.log(`📁 文件大小: ${(fs.statSync(outPath).size / 1024 / 1024).toFixed(2)} MB`);
-      return;
-    }
-    throw new Error('未获取到任务ID！响应: ' + JSON.stringify(submitRes.data).slice(0, 500));
+    const errMsg = submitRes?.error?.message || submitRes?.message || JSON.stringify(submitRes).slice(0, 300);
+    throw new Error('未获取到任务ID！响应: ' + errMsg);
   }
 
-  console.log(`🆔 任务ID: ${taskId}\n`);
-  console.log('⏳ 等待视频生成（预计 2-5 分钟）...\n');
+  console.log(`🆔 任务ID: ${taskId}`);
+  console.log(`⏳ 预计等待 1-3 分钟（视频生成中...）\n`);
 
   // Step 2: 轮询结果
-  const videoUrl = await pollTask(taskId);
-  console.log(`\n🔗 视频地址: ${videoUrl}\n`);
+  const result = await pollVideo(taskId);
+  console.log(`\n🔗 视频地址: ${result.url}\n`);
 
   // Step 3: 下载视频
   console.log('⬇️  下载视频文件...');
   const outPath = path.join(__dirname, 'fight-video.mp4');
-  await downloadFile(videoUrl, outPath);
+  await downloadFile(result.url, outPath);
 
   const size = fs.statSync(outPath).size;
   console.log(`\n========================================`);
   console.log(`✅ 视频生成完成！`);
   console.log(`📁 保存路径: ${outPath}`);
   console.log(`📦 文件大小: ${(size / 1024 / 1024).toFixed(2)} MB`);
-  console.log(`🔗 视频地址: ${videoUrl}`);
+  console.log(`🔗 视频地址: ${result.url}`);
   console.log(`========================================`);
 }
 
 main().catch(err => {
-  console.error('\n❌ 错误:', err.message);
+  console.error('\n❌ 错误:', err.message || String(err));
   process.exit(1);
 });
