@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>大排档雨夜对决 · Night Market Showdown</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=ZCOOL+KuaiLe&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --amber: #e8b14d;
+    --amber-deep: #b8782a;
+    --teal: #5fb5b0;
+    --teal-deep: #2a6b68;
+    --ink: #0e0d0a;
+    --ink-2: #1a1812;
+    --blood: #c1392b;
+    --steam: rgba(232, 177, 77, 0.25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ink); color: #f5e9c9; overflow-x: hidden; }
+
+  body {
+    font-family: "Noto Serif SC", serif;
+    min-height: 100vh;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(232, 177, 77, 0.18), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(95, 181, 176, 0.15), transparent 60%),
+      linear-gradient(180deg, #120f08 0%, #1a1612 50%, #0c0a06 100%);
+  }
+
+  /* ======== Grain + film effect ======== */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 3px),
+      radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
+    pointer-events: none;
+    z-index: 999;
+    mix-blend-mode: overlay;
+  }
+
+  /* ======== Hero / Opening ======== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px 80px;
+    text-align: center;
+  }
+
+  .film-gauge {
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.4em;
+    color: var(--amber);
+    font-size: 13px;
+    opacity: 0.75;
+    margin-bottom: 28px;
+  }
+
+  .hero-title {
+    font-family: "Noto Serif SC", serif;
+    font-weight: 900;
+    font-size: clamp(40px, 7vw, 92px);
+    line-height: 1.05;
+    color: var(--amber);
+    text-shadow:
+      0 0 30px rgba(232, 177, 77, 0.35),
+      0 2px 0 rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.08em;
+  }
+  .hero-title .alt {
+    color: var(--teal);
+    display: block;
+    font-size: 0.55em;
+    letter-spacing: 0.3em;
+    margin-top: 12px;
+    text-shadow: 0 0 22px rgba(95, 181, 176, 0.4);
+  }
+
+  .hero-sub {
+    margin-top: 28px;
+    color: #d9c89a;
+    font-size: 15px;
+    letter-spacing: 0.35em;
+    opacity: 0.85;
+  }
+
+  /* ======== Opening scene (the dai pai dong) ======== */
+  .scene-stage {
+    position: relative;
+    width: min(1100px, 94vw);
+    height: 420px;
+    margin: 56px auto 0;
+    border: 1px solid rgba(232, 177, 77, 0.25);
+    border-radius: 6px;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(15, 35, 45, 0.6) 0%, rgba(10, 20, 25, 0.85) 100%),
+      repeating-linear-gradient(90deg, rgba(232, 177, 77, 0.03) 0 2px, transparent 2px 8px);
+    box-shadow:
+      0 30px 60px -30px rgba(0, 0, 0, 0.9),
+      inset 0 0 60px rgba(0, 0, 0, 0.6);
+  }
+
+  /* stall awning */
+  .awning {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 74px;
+    background:
+      repeating-linear-gradient(90deg, #6b4a2a 0 18px, #8a6238 18px 36px);
+    border-bottom: 3px solid #1a120a;
+    box-shadow: inset 0 -10px 30px rgba(0,0,0,0.5);
+  }
+  .awning::after {
+    content: "";
+    position: absolute;
+    bottom: -12px; left: 0; right: 0;
+    height: 14px;
+    background: repeating-linear-gradient(90deg, transparent 0 14px, rgba(0,0,0,0.4) 14px 28px);
+    clip-path: polygon(0 0, 3% 100%, 7% 0, 10% 100%, 14% 0, 17% 100%, 21% 0, 24% 100%, 28% 0, 31% 100%, 35% 0, 38% 100%, 42% 0, 45% 100%, 49% 0, 52% 100%, 56% 0, 59% 100%, 63% 0, 66% 100%, 70% 0, 73% 100%, 77% 0, 80% 100%, 84% 0, 87% 100%, 91% 0, 94% 100%, 98% 0, 100% 100%);
+    background: #6b4a2a;
+  }
+
+  /* hanging bulb */
+  .bulb {
+    position: absolute;
+    top: 64px; left: 50%;
+    width: 46px; height: 60px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle at 50% 40%, #ffe89a 0%, #e8b14d 50%, #7a4a1a 100%);
+    border-radius: 50% 50% 45% 45%;
+    box-shadow: 0 0 60px 12px rgba(232, 177, 77, 0.55), 0 0 140px 40px rgba(232, 177, 77, 0.18);
+    animation: bulb-sway 4.5s ease-in-out infinite;
+  }
+  .bulb::before {
+    content: "";
+    position: absolute;
+    top: -60px; left: 50%;
+    width: 2px; height: 60px;
+    background: rgba(200, 180, 120, 0.4);
+    transform: translateX(-50%);
+  }
+  @keyframes bulb-sway {
+    0%, 100% { transform: translateX(-50%) rotate(-1.2deg); }
+    50%      { transform: translateX(-50%) rotate(1.2deg); }
+  }
+
+  /* table */
+  .table {
+    position: absolute;
+    bottom: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 520px;
+    height: 20px;
+    background: linear-gradient(180deg, #d9d2bc 0%, #8a8470 100%);
+    border-radius: 4px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+  }
+  .table::before, .table::after {
+    content: "";
+    position: absolute;
+    top: 20px;
+    width: 6px; height: 80px;
+    background: #6e6856;
+  }
+  .table::before { left: 40px; transform: skewX(8deg); }
+  .table::after  { right: 40px; transform: skewX(-8deg); }
+
+  /* beer mugs */
+  .mug {
+    position: absolute;
+    bottom: 108px;
+    width: 22px; height: 42px;
+    background: linear-gradient(180deg, rgba(232, 177, 77, 0.9) 0%, rgba(180, 120, 50, 0.9) 100%);
+    border-radius: 4px 4px 6px 6px;
+    box-shadow: inset 0 -6px 8px rgba(0,0,0,0.3);
+  }
+  .mug.left { left: calc(50% - 80px); }
+  .mug.right { right: calc(50% - 80px); }
+  .mug::before {
+    content: "";
+    position: absolute;
+    top: -6px; left: 2px; right: 2px;
+    height: 8px;
+    background: #fff6da;
+    border-radius: 3px;
+    opacity: 0.85;
+  }
+
+  /* the two men (stylized silhouettes with color accents) */
+  .fighter {
+    position: absolute;
+    bottom: 112px;
+    width: 120px;
+    height: 260px;
+    transition: transform 0.5s cubic-bezier(.2,.8,.2,1);
+  }
+  .fighter.left  { left: calc(50% - 260px); }
+  .fighter.right { right: calc(50% - 260px); transform: scaleX(-1); }
+
+  /* head */
+  .head {
+    position: absolute;
+    top: 0; left: 50%;
+    width: 52px; height: 62px;
+    margin-left: -26px;
+    background: linear-gradient(180deg, #2a2016 0%, #120c06 100%);
+    border-radius: 48% 48% 45% 45%;
+    box-shadow: inset 0 -6px 8px rgba(0,0,0,0.5);
+  }
+  .head::after {
+    content: "";
+    position: absolute;
+    top: 22px; left: 8px; right: 8px;
+    height: 6px;
+    background: linear-gradient(90deg, transparent 0, var(--amber) 15%, transparent 25%, transparent 50%, var(--teal) 65%, transparent 75%);
+    border-radius: 2px;
+    opacity: 0.9;
+  }
+  /* body / shirt */
+  .torso {
+    position: absolute;
+    top: 58px; left: 50%;
+    width: 88px; height: 110px;
+    margin-left: -44px;
+    border-radius: 12px 12px 18px 18px;
+  }
+  .fighter.left  .torso { background: linear-gradient(180deg, #4a5858 0%, #2a3434 100%); }
+  .fighter.right .torso { background: linear-gradient(180deg, #2a3552 0%, #141c30 100%); }
+
+  /* arm + fist */
+  .arm {
+    position: absolute;
+    top: 70px; right: -20px;
+    width: 22px; height: 90px;
+    background: inherit;
+    border-radius: 12px;
+    transform-origin: 50% 10%;
+    transform: rotate(20deg);
+  }
+  .fist {
+    position: absolute;
+    bottom: -8px; left: 50%;
+    width: 28px; height: 28px;
+    margin-left: -14px;
+    background: radial-gradient(circle at 35% 30%, #5a4a3a, #1a120a);
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+  }
+
+  /* pants */
+  .legs {
+    position: absolute;
+    top: 160px; left: 50%;
+    width: 78px; height: 110px;
+    margin-left: -39px;
+    background: linear-gradient(180deg, #1a1612 0%, #0a0806 100%);
+    border-radius: 8px;
+  }
+
+  /* steam rising from food */
+  .steam {
+    position: absolute;
+    bottom: 132px;
+    left: 50%;
+    width: 40px; height: 60px;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .steam span {
+    position: absolute;
+    bottom: 0; left: 50%;
+    width: 14px; height: 14px;
+    margin-left: -7px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 240, 200, 0.35), transparent 70%);
+    animation: steam-rise 3.2s ease-in infinite;
+  }
+  .steam span:nth-child(2) { animation-delay: 1.0s; left: 30%; }
+  .steam span:nth-child(3) { animation-delay: 2.0s; left: 70%; }
+  @keyframes steam-rise {
+    0%   { transform: translateY(0) scale(0.6); opacity: 0; }
+    30%  { opacity: 0.7; }
+    100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
+  }
+
+  /* ======== Play button ======== */
+  .play-btn {
+    margin-top: 32px;
+    padding: 14px 34px;
+    font-family: "Noto Serif SC", serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.3em;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--amber) 0%, var(--amber-deep) 100%);
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 12px 30px -10px rgba(232, 177, 77, 0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .play-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(232, 177, 77, 0.8), inset 0 1px 0 rgba(255,255,255,0.35); }
+  .play-btn:active { transform: translateY(1px); }
+
+  .caption {
+    margin-top: 22px;
+    color: #c7b580;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    opacity: 0.75;
+  }
+
+  /* ======== Fight panel cards ======== */
+  .scenes {
+    max-width: 1200px;
+    margin: 80px auto 0;
+    padding: 0 24px 120px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+  }
+
+  .shot {
+    position: relative;
+    padding: 22px 22px 26px;
+    background: linear-gradient(180deg, rgba(30, 24, 16, 0.85) 0%, rgba(14, 12, 8, 0.95) 100%);
+    border: 1px solid rgba(232, 177, 77, 0.18);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  }
+  .shot:hover {
+    transform: translateY(-4px);
+    border-color: rgba(95, 181, 176, 0.4);
+    box-shadow: 0 24px 50px -20px rgba(95, 181, 176, 0.25);
+  }
+  .shot .num {
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    color: var(--teal);
+    opacity: 0.75;
+  }
+  .shot h3 {
+    margin-top: 8px;
+    font-family: "Noto Serif SC", serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--amber);
+    letter-spacing: 0.1em;
+  }
+  .shot .visual {
+    margin-top: 18px;
+    height: 160px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 50%, #2a2418 0%, #0e0a06 100%);
+    border: 1px solid rgba(232, 177, 77, 0.15);
+  }
+  .shot p {
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: #d9c89a;
+    letter-spacing: 0.05em;
+  }
+  .shot .tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--blood);
+    padding: 4px 10px;
+    border: 1px solid rgba(193, 57, 43, 0.5);
+    border-radius: 2px;
+  }
+
+  /* ---- Visual 1: stare-down speed lines ---- */
+  .vis-stare {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+  }
+  .vis-stare::before, .vis-stare::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    opacity: 0.6;
+    animation: glare 1.6s ease-out infinite;
+  }
+  .vis-stare::before { left: 8%; }
+  .vis-stare::after  { right: 8%; transform: scaleX(-1); }
+  @keyframes glare {
+    0%, 100% { opacity: 0.3; transform: scaleX(0.8); }
+    50%      { opacity: 0.9; transform: scaleX(1.05); }
+  }
+  .mini-face {
+    width: 62px; height: 72px;
+    background: linear-gradient(180deg, #2a2016 0%, #120c06 100%);
+    border-radius: 48% 48% 45% 45%;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 28px rgba(232, 177, 77, 0.35);
+  }
+  .mini-face::after {
+    content: "";
+    position: absolute;
+    top: 28px; left: 10px; right: 10px;
+    height: 5px;
+    background: var(--amber);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--amber);
+  }
+  .mini-face.right { background: linear-gradient(180deg, #1f2a3a 0%, #0a1220 100%); }
+  .mini-face.right::after { background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+
+  /* ---- Visual 2: punch impact ---- */
+  .vis-punch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .impact {
+    position: relative;
+    width: 130px; height: 130px;
+  }
+  .impact::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 230, 150, 0.85) 0%, rgba(193, 57, 43, 0.6) 35%, transparent 70%);
+    border-radius: 50%;
+    animation: burst 1.4s ease-out infinite;
+  }
+  .burst-rays span {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 2px; height: 80px;
+    background: linear-gradient(180deg, transparent, var(--amber) 30%, var(--blood) 70%, transparent);
+    transform-origin: 50% 0;
+    opacity: 0.85;
+  }
+  .burst-rays span:nth-child(1) { transform: translate(-50%, 0) rotate(0deg); }
+  .burst-rays span:nth-child(2) { transform: translate(-50%, 0) rotate(45deg); }
+  .burst-rays span:nth-child(3) { transform: translate(-50%, 0) rotate(90deg); }
+  .burst-rays span:nth-child(4) { transform: translate(-50%, 0) rotate(135deg); }
+  .burst-rays span:nth-child(5) { transform: translate(-50%, 0) rotate(180deg); }
+  .burst-rays span:nth-child(6) { transform: translate(-50%, 0) rotate(225deg); }
+  .burst-rays span:nth-child(7) { transform: translate(-50%, 0) rotate(270deg); }
+  .burst-rays span:nth-child(8) { transform: translate(-50%, 0) rotate(315deg); }
+  @keyframes burst {
+    0%, 100% { transform: scale(0.7); opacity: 0.55; }
+    50%      { transform: scale(1.15); opacity: 1; }
+  }
+  .pow {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "ZCOOL KuaiLe", sans-serif;
+    font-size: 42px;
+    color: #fff;
+    text-shadow:
+      -2px -2px 0 var(--blood),
+      2px -2px 0 var(--blood),
+      -2px 2px 0 var(--blood),
+      2px 2px 0 var(--blood),
+      0 0 24px rgba(255, 220, 120, 0.8);
+    letter-spacing: 0.08em;
+    animation: pow-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pow-pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.9); }
+    50%      { transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  /* ---- Visual 3: kick motion ---- */
+  .vis-kick { display: block; overflow: hidden; }
+  .motion-lines {
+    position: absolute;
+    inset: 0;
+  }
+  .motion-lines span {
+    position: absolute;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    border-radius: 2px;
+    animation: swipe 1.8s ease-in infinite;
+  }
+  .motion-lines span:nth-child(1) { top: 18%; left: -10%; width: 70%; animation-delay: 0s; opacity: 0.8; }
+  .motion-lines span:nth-child(2) { top: 35%; left: -5%; width: 90%; animation-delay: 0.25s; opacity: 0.6; }
+  .motion-lines span:nth-child(3) { top: 55%; left: -15%; width: 110%; animation-delay: 0.5s; opacity: 0.9; background: linear-gradient(90deg, transparent, var(--teal), transparent); }
+  .motion-lines span:nth-child(4) { top: 72%; left: -8%; width: 80%; animation-delay: 0.75s; opacity: 0.5; }
+  .motion-lines span:nth-child(5) { top: 85%; left: -12%; width: 100%; animation-delay: 1.0s; opacity: 0.7; }
+  @keyframes swipe {
+    0%   { transform: translateX(0); opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateX(120%); opacity: 0; }
+  }
+  .kick-legend {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "ZCOOL KuaiLe", sans-serif;
+    font-size: 36px;
+    color: #fff;
+    letter-spacing: 0.25em;
+    text-shadow: 0 0 20px var(--teal), 2px 2px 0 rgba(0,0,0,0.5);
+  }
+
+  /* ---- Visual 4: chair smash ---- */
+  .vis-chair {
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shards {
+    position: absolute;
+    inset: 0;
+  }
+  .shards span {
+    position: absolute;
+    width: 16px; height: 4px;
+    background: var(--amber);
+    top: 50%; left: 50%;
+    animation: shard-fly 1.6s ease-out infinite;
+    opacity: 0;
+  }
+  .shards span:nth-child(1) { animation-delay: 0s;   --dx: 60px;  --dy: -40px; }
+  .shards span:nth-child(2) { animation-delay: 0.1s; --dx: -70px; --dy: -30px; }
+  .shards span:nth-child(3) { animation-delay: 0.2s; --dx: 80px;  --dy: 20px; }
+  .shards span:nth-child(4) { animation-delay: 0.05s;--dx: -50px; --dy: 40px; }
+  .shards span:nth-child(5) { animation-delay: 0.15s;--dx: 30px;  --dy: -60px; }
+  .shards span:nth-child(6) { animation-delay: 0.25s;--dx: -40px; --dy: -50px; }
+  @keyframes shard-fly {
+    0%   { transform: translate(-50%, -50%) rotate(0); opacity: 0; }
+    15%  { opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(360deg); opacity: 0; }
+  }
+  .chair {
+    position: relative;
+    width: 90px; height: 100px;
+    animation: chair-shake 1.6s ease-in-out infinite;
+  }
+  @keyframes chair-shake {
+    0%, 100% { transform: rotate(0) scale(1); }
+    25%      { transform: rotate(-8deg) scale(1.05); }
+    75%      { transform: rotate(8deg) scale(1.05); }
+  }
+  .chair .back  { position: absolute; top: 0; left: 15%; right: 15%; height: 55px; background: #6a4a2a; border-radius: 4px; }
+  .chair .seat  { position: absolute; top: 55px; left: 5%; right: 5%; height: 14px; background: #7a5430; border-radius: 2px; }
+  .chair .leg-l { position: absolute; top: 69px; left: 10%; width: 6px; height: 30px; background: #4a3018; }
+  .chair .leg-r { position: absolute; top: 69px; right: 10%; width: 6px; height: 30px; background: #4a3018; }
+
+  /* ---- Visual 5: final stand-off ---- */
+  .vis-standoff {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 0 24px 24px;
+  }
+  .silhouette {
+    width: 60px; height: 120px;
+    background: linear-gradient(180deg, #1a1208 0%, #000 100%);
+    clip-path: polygon(35% 0, 65% 0, 70% 15%, 80% 25%, 90% 55%, 85% 100%, 60% 100%, 55% 75%, 50% 100%, 45% 75%, 40% 100%, 15% 100%, 10% 55%, 20% 25%, 30% 15%);
+    position: relative;
+  }
+  .silhouette.left { filter: drop-shadow(0 0 16px rgba(232, 177, 77, 0.4)); }
+  .silhouette.right { filter: drop-shadow(0 0 16px rgba(95, 181, 176, 0.4)); transform: scaleX(-1); }
+  .vs-text {
+    position: absolute;
+    top: 38%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Bebas Neue", sans-serif;
+    font-size: 52px;
+    color: var(--blood);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 20px rgba(193, 57, 43, 0.7), 2px 2px 0 rgba(0,0,0,0.5);
+    animation: vs-pulse 2s ease-in-out infinite;
+  }
+  @keyframes vs-pulse {
+    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); }
+    50%      { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+  }
+
+  /* ======== Fight animation active states ======== */
+  .scene-stage.fighting .fighter.left  { animation: punch-left  0.9s ease-in-out infinite; }
+  .scene-stage.fighting .fighter.right { animation: punch-right 0.9s ease-in-out infinite; }
+  .scene-stage.fighting .arm { animation: arm-punch 0.9s ease-in-out infinite; transform-origin: 50% 10%; }
+
+  @keyframes punch-left {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    30%      { transform: translateX(50px) rotate(-3deg); }
+    50%      { transform: translateX(30px) rotate(0); }
+    70%      { transform: translateX(60px) rotate(2deg); }
+  }
+  @keyframes punch-right {
+    0%, 100% { transform: scaleX(-1) translateX(0); }
+    30%      { transform: scaleX(-1) translateX(50px); }
+    50%      { transform: scaleX(-1) translateX(30px); }
+    70%      { transform: scaleX(-1) translateX(60px); }
+  }
+  @keyframes arm-punch {
+    0%, 100% { transform: rotate(20deg); }
+    40%      { transform: rotate(-60deg); }
+    60%      { transform: rotate(-30deg); }
+  }
+
+  /* screen shake when fighting */
+  .scene-stage.fighting {
+    animation: shake 0.45s ease-in-out infinite;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translate(0, 0); }
+    20%      { transform: translate(-2px, 1px); }
+    40%      { transform: translate(2px, -1px); }
+    60%      { transform: translate(-1px, 2px); }
+    80%      { transform: translate(1px, -2px); }
+  }
+
+  /* impact flashes */
+  .impact-flash {
+    position: absolute;
+    top: 40%; left: 50%;
+    width: 160px; height: 160px;
+    transform: translate(-50%, -50%) scale(0.6);
+    pointer-events: none;
+    opacity: 0;
+  }
+  .scene-stage.fighting .impact-flash {
+    animation: flash-impact 0.9s ease-out infinite;
+  }
+  .impact-flash::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 240, 180, 0.9) 0%, rgba(255, 180, 100, 0.5) 30%, transparent 70%);
+    border-radius: 50%;
+  }
+  @keyframes flash-impact {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+    30%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    60%  { opacity: 0; transform: translate(-50%, -50%) scale(1.3); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
+
+  /* floating POW text */
+  .floating-hit {
+    position: absolute;
+    font-family: "ZCOOL KuaiLe", sans-serif;
+    font-size: 38px;
+    color: #fff;
+    text-shadow: -2px -2px 0 var(--blood), 2px -2px 0 var(--blood), -2px 2px 0 var(--blood), 2px 2px 0 var(--blood), 0 0 18px rgba(255,220,120,0.7);
+    opacity: 0;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+  }
+  .scene-stage.fighting .floating-hit {
+    animation: float-hit 0.9s ease-out infinite;
+  }
+  @keyframes float-hit {
+    0%   { opacity: 0; transform: translate(-50%, -30%) scale(0.5) rotate(-8deg); }
+    30%  { opacity: 1; transform: translate(-50%, -60%) scale(1.1) rotate(4deg); }
+    70%  { opacity: 1; transform: translate(-50%, -90%) scale(1.0) rotate(-2deg); }
+    100% { opacity: 0; transform: translate(-50%, -130%) scale(0.9) rotate(0); }
+  }
+
+  /* ======== Footer / credit bar ======== */
+  .credit-bar {
+    max-width: 1200px;
+    margin: 0 auto 60px;
+    padding: 20px 24px;
+    border-top: 1px solid rgba(232, 177, 77, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Bebas Neue", sans-serif;
+    letter-spacing: 0.3em;
+    font-size: 12px;
+    color: #8a7a55;
+  }
+  .credit-bar .dot {
+    color: var(--blood);
+    margin: 0 10px;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .scene-stage { height: 360px; }
+    .table { width: 300px; }
+    .fighter.left  { left: calc(50% - 170px); }
+    .fighter.right { right: calc(50% - 170px); }
+    .fighter { width: 90px; height: 200px; }
+    .hero-title { letter-spacing: 0.04em; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="film-gauge">— REEL 07 · TAKE 12 · AUDIO 24BIT —</div>
+
+    <h1 class="hero-title">
+      大排档 · 雨夜对决
+      <span class="alt">NIGHT  MARKET  SHOWDOWN</span>
+    </h1>
+
+    <p class="hero-sub">两 个 男 人 · 一 张 折 叠 桌 · 没 有 退 路</p>
+
+    <!-- Opening scene -->
+    <div class="scene-stage" id="stage">
+      <div class="awning"></div>
+      <div class="bulb"></div>
+
+      <div class="steam"><span></span><span></span><span></span></div>
+
+      <div class="table"></div>
+      <div class="mug left"></div>
+      <div class="mug right"></div>
+
+      <div class="fighter left">
+        <div class="head"></div>
+        <div class="torso">
+          <div class="arm"><div class="fist"></div></div>
+        </div>
+        <div class="legs"></div>
+      </div>
+
+      <div class="fighter right">
+        <div class="head"></div>
+        <div class="torso">
+          <div class="arm"><div class="fist"></div></div>
+        </div>
+        <div class="legs"></div>
+      </div>
+
+      <div class="impact-flash"></div>
+      <div class="floating-hit" style="top: 40%; left: 50%;">POW!</div>
+    </div>
+
+    <button class="play-btn" id="playBtn">▶ 打 起 来</button>
+    <div class="caption" id="caption">灯 光 · 对 视 · 下 一 秒 就 要 动 手</div>
+  </section>
+
+  <!-- STORYBOARD SHOTS -->
+  <section class="scenes">
+
+    <div class="shot">
+      <div class="num">SHOT 01 · CLOSE UP</div>
+      <h3>目 光 对 峙</h3>
+      <div class="visual vis-stare">
+        <div class="mini-face left"></div>
+        <div class="mini-face right"></div>
+      </div>
+      <p>啤酒杯悬在半空。黄灯下两张脸,眼神像两柄出鞘的刀。空气在颤抖,大排档的喧闹被这道目光切开。</p>
+      <span class="tag">STATIC · TENSION</span>
+    </div>
+
+    <div class="shot">
+      <div class="num">SHOT 02 · MEDIUM</div>
+      <h3>第 一 拳</h3>
+      <div class="visual vis-punch">
+        <div class="impact">
+          <div class="burst-rays"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="pow">砰!</div>
+        </div>
+      </div>
+      <p>灰衣男人先动。拳头破空而出,快得只剩一道残影。西装男侧头闪过,指节擦过耳畔——这一拳没中,但意思到了。</p>
+      <span class="tag">FAST · IMPACT</span>
+    </div>
+
+    <div class="shot">
+      <div class="num">SHOT 03 · LOW ANGLE</div>
+      <h3>飞 身 一 脚</h3>
+      <div class="visual vis-kick">
+        <div class="motion-lines">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="kick-legend">啪!</div>
+      </div>
+      <p>塑料凳被踢飞三米。西装男一记低扫,灰衣腾空闪开,膝盖撞在桌角。折叠桌吱呀一声,啤酒洒了一地。</p>
+      <span class="tag">KICK · DEBRIS</span>
+    </div>
+
+    <div class="shot">
+      <div class="num">SHOT 04 · DYNAMIC</div>
+      <h3>折 叠 椅 对 撞</h3>
+      <div class="visual vis-chair">
+        <div class="shards">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="chair">
+          <div class="back"></div>
+          <div class="seat"></div>
+          <div class="leg-l"></div>
+          <div class="leg-r"></div>
+        </div>
+      </div>
+      <p>两人同时抄起椅子。咔啦——金属折叠椅在空中相撞,椅背凹陷,碎片四溅。周围食客尖叫后退,但没人敢真正上前。</p>
+      <span class="tag">CHAIR · CLANG</span>
+    </div>
+
+    <div class="shot">
+      <div class="num">SHOT 05 · WIDE SHOT</div>
+      <h3>雨 中 对 峙</h3>
+      <div class="visual vis-standoff">
+        <div class="silhouette left"></div>
+        <div class="vs-text">VS</div>
+        <div class="silhouette right"></div>
+      </div>
+      <p>大排档的灯还晃着。雨从帆布缝隙里漏下来,打在两人肩上。没人再说话。都知道,这一架,得有一个人站着出去。</p>
+      <span class="tag">RAIN · STANDOFF</span>
+    </div>
+
+  </section>
+
+  <div class="credit-bar">
+    <div>DIR. · NIGHT MARKET</div>
+    <div><span class="dot">●</span> DURATION 01:42 <span class="dot">●</span> LOCATION KOWLOON ALLEY 07 <span class="dot">●</span> TAKES ∞</div>
+    <div>END · REEL</div>
+  </div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const btn = document.getElementById('playBtn');
+  const caption = document.getElementById('caption');
+  let fighting = false;
+  const captions = [
+    '灯 光 · 对 视 · 下 一 秒 就 要 动 手',
+    '拳 头 破 空 · 啤 酒 杯 悬 在 半 空',
+    '折 叠 椅 咔 啦 一 声 · 碎 片 四 溅',
+    '雨 水 从 帆 布 缝 漏 下 · 两 人 都 没 有 退 路',
+    '灯 光 还 在 晃 · 这 一 架 · 只 能 有 一 个 人 站 着 出 去'
+  ];
+  let ci = 0;
+
+  btn.addEventListener('click', () => {
+    fighting = !fighting;
+    if (fighting) {
+      stage.classList.add('fighting');
+      btn.textContent = '■ 停 止';
+      btn.style.background = 'linear-gradient(180deg, #c1392b 0%, #7a2418 100%)';
+      btn.style.color = '#fff5e0';
+      // rotate captions
+      ci = 1;
+      caption.textContent = captions[ci];
+      captionTimer = setInterval(() => {
+        ci = (ci + 1) % captions.length;
+        caption.style.opacity = 0;
+        setTimeout(() => {
+          caption.textContent = captions[ci];
+          caption.style.opacity = 0.75;
+        }, 250);
+      }, 2800);
+    } else {
+      stage.classList.remove('fighting');
+      btn.textContent = '▶ 打 起 来';
+      btn.style.background = 'linear-gradient(180deg, var(--amber) 0%, var(--amber-deep) 100%)';
+      btn.style.color = 'var(--ink)';
+      clearInterval(captionTimer);
+      ci = 0;
+      caption.textContent = captions[0];
+    }
+  });
+
+  // Caption transition CSS
+  caption.style.transition = 'opacity 0.4s ease';
+
+  // Ambient: subtle bulb flicker via JS timing variation
+  const bulb = document.querySelector('.bulb');
+  setInterval(() => {
+    bulb.style.boxShadow = `0 0 ${50 + Math.random()*20}px ${10 + Math.random()*6}px rgba(232, 177, 77, ${0.45 + Math.random()*0.2})`;
+  }, 900);
+
+  // Parallax scroll for hero
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (y < 800) {
+      stage.style.transform = `translateY(${y * 0.06}px)`;
+    }
+  }, { passive: true });
+
+  let captionTimer = null;
+</script>
+
+</body>
+</html>
