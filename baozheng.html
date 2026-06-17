@@ -3,110 +3,266 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>包拯 · 形象照</title>
+<title>包青天 · 汴京异象</title>
 <style>
   body {
     margin: 0;
-    padding: 60px 20px;
+    padding: 50px 20px 80px;
     min-height: 100vh;
     background:
-      radial-gradient(ellipse at 50% 0%, rgba(212, 165, 75, 0.18), transparent 60%),
-      linear-gradient(180deg, #1a1410 0%, #0a0806 100%);
+      radial-gradient(ellipse at 50% 0%, rgba(138, 65, 180, 0.18), transparent 55%),
+      radial-gradient(ellipse at 50% 100%, rgba(212, 165, 75, 0.1), transparent 55%),
+      linear-gradient(180deg, #0f0d14 0%, #1a1420 50%, #0a080c 100%);
     font-family: -apple-system, "PingFang SC", "Microsoft YaHei", serif;
     color: #e8d9b0;
-    text-align: center;
   }
   .container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
   }
   h1 {
     font-size: 42px;
-    letter-spacing: 0.3em;
-    color: #d4a54b;
-    margin: 0 0 10px;
-    text-shadow: 0 0 30px rgba(212, 165, 75, 0.4);
-  }
-  .title-en {
-    color: #6a5a3a;
-    font-size: 12px;
     letter-spacing: 0.4em;
-    margin-bottom: 40px;
+    color: #d4a54b;
+    margin: 0 0 8px;
+    text-align: center;
+    text-shadow: 0 0 30px rgba(212, 165, 75, 0.4);
+    font-weight: 700;
+  }
+  .subtitle {
+    color: #8a7a55;
+    font-size: 13px;
+    letter-spacing: 0.5em;
+    text-align: center;
+    margin-bottom: 50px;
     text-transform: uppercase;
   }
-  .image-frame {
-    display: inline-block;
-    padding: 8px;
-    background: linear-gradient(135deg, #d4a54b, #8a6a25, #d4a54b);
-    border-radius: 4px;
-    box-shadow:
-      0 0 0 1px rgba(212, 165, 75, 0.3),
-      0 40px 80px -20px rgba(0, 0, 0, 0.9),
-      0 0 60px rgba(212, 165, 75, 0.15);
+  .divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #8a6a25, transparent);
+    margin: 0 auto 50px;
   }
-  .image-frame img {
+  .hero-card {
+    border: 1px solid rgba(212, 165, 75, 0.35);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 40px;
+    background: rgba(20, 15, 25, 0.7);
+    box-shadow:
+      0 30px 80px -20px rgba(138, 65, 180, 0.3),
+      0 0 40px rgba(212, 165, 75, 0.1),
+      inset 0 1px 0 rgba(212, 165, 75, 0.15);
+    position: relative;
+  }
+  .hero-card::before {
+    content: "完整版 · 20 秒拼接";
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    font-size: 11px;
+    color: #d4a54b;
+    letter-spacing: 0.2em;
+    background: rgba(138, 106, 37, 0.2);
+    padding: 3px 12px;
+    border-radius: 3px;
+    border: 1px solid rgba(212, 165, 75, 0.3);
+  }
+  .hero-title {
+    font-size: 20px;
+    color: #e8c878;
+    margin-bottom: 18px;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+  }
+  video {
+    width: 100%;
     display: block;
-    max-width: 100%;
-    border-radius: 2px;
+    border-radius: 4px;
     background: #000;
   }
-  .info {
-    margin-top: 30px;
-    padding: 20px 40px;
-    border: 1px solid rgba(212, 165, 75, 0.25);
-    border-radius: 4px;
-    background: rgba(20, 16, 12, 0.5);
-    display: inline-block;
-    text-align: left;
+  .hero-video {
+    border: 1px solid rgba(212, 165, 75, 0.2);
   }
-  .info-row {
-    display: flex;
-    gap: 30px;
+  .hero-desc {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 165, 75, 0.15);
     font-size: 13px;
-    color: #8a7a55;
-    letter-spacing: 0.1em;
-    line-height: 2;
+    color: #a89860;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
   }
-  .info-row b {
+  .hero-desc strong {
     color: #d4a54b;
-    font-weight: 500;
-    min-width: 80px;
-    display: inline-block;
+    font-weight: 600;
   }
-  .quote {
-    margin-top: 40px;
-    font-size: 15px;
-    color: #a89060;
+
+  .scene-section {
+    margin-top: 60px;
+  }
+  .scene-title {
+    font-size: 22px;
+    color: #8a6a9f;
     letter-spacing: 0.3em;
-    font-style: italic;
+    margin-bottom: 8px;
+    text-align: center;
   }
-  .divider {
-    width: 40px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #d4a54b, transparent);
-    margin: 30px auto;
+  .scene-sub {
+    font-size: 11px;
+    color: #5a4a6a;
+    letter-spacing: 0.4em;
+    text-align: center;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+  }
+  .scene-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 50px;
+  }
+  .clip-card {
+    border: 1px solid rgba(138, 106, 167, 0.25);
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(15, 12, 20, 0.8);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .clip-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 165, 75, 0.4);
+    box-shadow: 0 20px 40px -15px rgba(138, 65, 180, 0.4);
+  }
+  .clip-card video {
+    border-bottom: 1px solid rgba(138, 106, 167, 0.2);
+  }
+  .clip-info {
+    padding: 14px 18px;
+  }
+  .clip-num {
+    font-size: 11px;
+    color: #8a6a9f;
+    letter-spacing: 0.3em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .clip-name {
+    font-size: 15px;
+    color: #e8c878;
+    margin-bottom: 4px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .clip-desc {
+    font-size: 12px;
+    color: #7a6a8a;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+  .clip-meta {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #5a4a6a;
+    letter-spacing: 0.1em;
+  }
+  .clip-meta span {
+    color: #8a7a55;
+  }
+
+  .footer {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(138, 106, 167, 0.15);
+    text-align: center;
+    font-size: 11px;
+    color: #5a4a6a;
+    letter-spacing: 0.3em;
   }
 </style>
 </head>
 <body>
   <div class="container">
-    <h1>包 拯</h1>
-    <div class="title-en">Bao Zheng · The Upright Judge</div>
-
-    <div class="image-frame">
-      <img src="https://platform-outputs.agnes-ai.space/images/t2i/52d10718ef824646b633c9bbe5379f46.png" alt="包拯形象照">
-    </div>
-
-    <div class="info">
-      <div class="info-row"><b>朝代</b><span>北宋</span></div>
-      <div class="info-row"><b>身份</b><span>开封府尹 · 龙图阁直学士</span></div>
-      <div class="info-row"><b>特征</b><span>黑面 · 额有月牙 · 铁面无私</span></div>
-      <div class="info-row"><b>风格</b><span>电影级肖像 · 戏剧性光影</span></div>
-      <div class="info-row"><b>尺寸</b><span>1024 × 1024</span></div>
-    </div>
-
+    <h1>包 青 天</h1>
+    <div class="subtitle">BAO ZHENG · 汴京异象</div>
     <div class="divider"></div>
-    <div class="quote">「关节不到，有阎罗包老」</div>
+
+    <div class="hero-card">
+      <div class="hero-title">汴京异象 · 正堂肃穆 · 完整版</div>
+      <video class="hero-video" controls autoplay muted loop playsinline>
+        <source src="/baozheng_final.mp4" type="video/mp4">
+      </video>
+      <div class="hero-desc">
+        <strong>镜号1</strong>：北宋汴京全景 —— 暗紫色天幕下，圆月被紫黑色光晕环绕，狂风席卷城池，
+        开封府飞檐铜铃摇曳，烛火微光透过云层。<br>
+        <strong>镜号2</strong>：开封府公堂内景 —— 数十红烛摇曳，包拯端坐中央，黑面长髯、额带月牙、目光凝重，
+        众人肃穆而立。暖黄烛光与门外紫雾形成强烈冷暖对比。
+      </div>
+    </div>
+
+    <div class="scene-section">
+      <div class="scene-title">镜 号 1</div>
+      <div class="scene-sub">SCENE 01 · 汴京异象 · 0:00 - 0:05</div>
+      <div class="scene-grid">
+        <div class="clip-card">
+          <video controls muted playsinline preload="metadata">
+            <source src="/baozheng_s1_city.mp4" type="video/mp4">
+          </video>
+          <div class="clip-info">
+            <div class="clip-num">镜号 1-A</div>
+            <div class="clip-name">汴京紫月城景</div>
+            <div class="clip-desc">固定机位俯拍 · 汴京城全景 · 暗紫天幕与紫黑月晕 · 飞檐铜铃摇曳 · 云层翻涌</div>
+            <div class="clip-meta">时长 <span>5s</span> · 尺寸 <span>1280×704</span></div>
+          </div>
+        </div>
+        <div class="clip-card">
+          <video controls muted playsinline preload="metadata">
+            <source src="/baozheng_s1_moon.mp4" type="video/mp4">
+          </video>
+          <div class="clip-info">
+            <div class="clip-num">镜号 1-B</div>
+            <div class="clip-name">紫月光晕特写</div>
+            <div class="clip-desc">圆月特写 · 紫黑色环状光晕 · 黑云横向流动 · 低饱和度暗紫调色 · 压抑感</div>
+            <div class="clip-meta">时长 <span>5s</span> · 尺寸 <span>1280×704</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene-section">
+      <div class="scene-title">镜 号 2</div>
+      <div class="scene-sub">SCENE 02 · 正堂肃穆 · 0:05 - 0:10</div>
+      <div class="scene-grid">
+        <div class="clip-card">
+          <video controls muted playsinline preload="metadata">
+            <source src="/baozheng_s2_court.mp4" type="video/mp4">
+          </video>
+          <div class="clip-info">
+            <div class="clip-num">镜号 2-A</div>
+            <div class="clip-name">开封府公堂全景</div>
+            <div class="clip-desc">公堂完整内景 · 红烛暖光 · 众人分立两侧 · 包拯端坐中央 · 轨道慢速前推 (Dolly In)</div>
+            <div class="clip-meta">时长 <span>5s</span> · 尺寸 <span>1280×704</span></div>
+          </div>
+        </div>
+        <div class="clip-card">
+          <video controls muted playsinline preload="metadata">
+            <source src="/baozheng_s2_bao.mp4" type="video/mp4">
+          </video>
+          <div class="clip-info">
+            <div class="clip-num">镜号 2-B</div>
+            <div class="clip-name">包拯中近景推镜</div>
+            <div class="clip-desc">中近景 · 黑面长髯 · 额头月牙微发光 · 烛光侧打 · 肃穆凝视 · 冷暖光对比</div>
+            <div class="clip-meta">时长 <span>5s</span> · 尺寸 <span>1280×704</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      AGNES-VIDEO-V2.0 · FILM GRAIN · CINEMATIC LIT · 16:9 WIDESCREEN
+    </div>
   </div>
 </body>
 </html>
