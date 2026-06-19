@@ -149,6 +149,21 @@ body {
   border-color: transparent;
   color: #fff;
 }
+.chips.presets .chip {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15));
+  border-color: rgba(99,102,241,0.35);
+  color: #e3e7ff;
+  font-size: 13px;
+  padding: 7px 12px;
+}
+.chips.presets .chip:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.chips.presets .chip.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+}
 
 .primary-btn {
   width: 100%;

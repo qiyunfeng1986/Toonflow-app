@@ -52,6 +52,70 @@
         opt.textContent = m;
         el.model.appendChild(opt);
       });
+
+      // --- scene presets ---
+      const PRESETS = [
+        {
+          name: "🥷 武打动作",
+          prompt: "古装侠客在竹林中与敌人激烈对决，[推进]快速出招，[左摇]闪避踢腿，[变焦推近]手部出掌，[晃动]镜头模拟搏斗，动作流畅有节奏感，电影级分镜，光线透过竹叶形成斑驳光影，慢动作与快切结合，东方武侠风格",
+          model: "MiniMax-Hailuo-2.3",
+          resolution: "1080P",
+          duration: 6,
+        },
+        {
+          name: "🐉 古风仙侠",
+          prompt: "白衣剑客立于云海之巅，衣袂随风飘动，[左移]镜头平移展现辽阔山河，[拉远]展现人物身处天地间的渺小，[下降]云海翻腾，仙气缭绕，仙鹤飞过，水墨国风，电影级光影",
+          model: "MiniMax-Hailuo-2.3",
+          resolution: "1080P",
+          duration: 6,
+        },
+        {
+          name: "🚀 科幻大片",
+          prompt: "未来都市的霓虹街道，飞行器从头顶掠过，[推进]主角向前奔跑，[变焦推近]面部特写眼神坚毅，[左摇]转身躲避爆炸，赛博朋克风格，镜头带轻微光晕，雨夜反射，科幻电影质感",
+          model: "MiniMax-Hailuo-2.3-Fast",
+          resolution: "768P",
+          duration: 10,
+        },
+        {
+          name: "🐱 可爱宠物",
+          prompt: "橘色小猫在洒满阳光的木地板上追逐滚动的毛线球，[推进]可爱靠近，[下摇]低头扑球，[固定]专注表情，毛发蓬松有光泽，温暖治愈，电影级柔焦",
+          model: "MiniMax-Hailuo-2.3",
+          resolution: "768P",
+          duration: 6,
+        },
+        {
+          name: "🌊 自然风光",
+          prompt: "航拍视角：蜿蜒海岸线上的悬崖与碧蓝海水，[拉远]展现壮阔全景，[左移]海岸线平移，[变焦推近]浪涛拍打岩石的慢动作，海天一色，阳光闪耀，纪录片级画面",
+          model: "MiniMax-Hailuo-2.3-Fast",
+          resolution: "1080P",
+          duration: 10,
+        },
+        {
+          name: "🔥 热血竞技",
+          prompt: "篮球比赛最后一秒绝杀投篮，[变焦推近]球员起跳持球，[推进]冲向篮筐，[晃动]激烈对抗，[固定]进球瞬间特写，汗水飞溅，观众欢呼，电影级慢动作",
+          model: "MiniMax-Hailuo-2.3",
+          resolution: "1080P",
+          duration: 6,
+        },
+      ];
+
+      PRESETS.forEach((p) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.textContent = p.name;
+        chip.title = `点击一键填入场景 preset：${p.name}`;
+        chip.addEventListener("click", () => {
+          el.prompt.value = p.prompt;
+          el.prompt.dispatchEvent(new Event("input"));
+          if (p.model) el.model.value = p.model;
+          if (p.resolution) el.resolution.value = p.resolution;
+          if (p.duration) el.duration.value = String(p.duration);
+          // 视觉反馈
+          document.querySelectorAll("#presetChips .chip").forEach((c) => c.classList.remove("active"));
+          chip.classList.add("active");
+        });
+        el.presetChips.appendChild(chip);
+      });
     })
     .catch(() => {
       el.apiKeyBanner.classList.remove("hidden");
