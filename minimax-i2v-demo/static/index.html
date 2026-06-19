@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MiniMax 图生视频 Demo</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <h1>MiniMax · 图生视频 <span class="sub">I2V Playground</span></h1>
+      <p class="tag">上传一张图片，写一段描述，一键生成视频。支持 15 种运镜指令。</p>
+      <div id="apiKeyBanner" class="warn hidden">
+        未检测到 <code>MINIMAX_API_KEY</code>，请在启动服务前设置环境变量。
+      </div>
+    </header>
+
+    <main class="grid">
+      <!-- LEFT: form -->
+      <section class="panel form-panel">
+        <h2>1. 上传起始帧</h2>
+        <div class="row">
+          <label class="uploader" id="uploader">
+            <input type="file" id="imageFile" accept="image/*" hidden />
+            <div id="uploaderInner">
+              <div class="upload-icon">🖼️</div>
+              <div class="upload-text">点击或拖拽图片到此处<br /><span class="hint">JPG / PNG / WebP，不超过 20MB</span></div>
+            </div>
+            <img id="imagePreview" alt="preview" hidden />
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">
+            <span>或使用公网图片 URL</span>
+            <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg" />
+          </label>
+        </div>
+
+        <h2>2. 视频描述 (Prompt)</h2>
+        <label class="field">
+          <span>描述（最多 2000 字符）</span>
+          <textarea id="prompt" rows="5" placeholder="一只毛茸茸的橘猫坐在草地上，阳光穿过树叶洒下光斑，猫缓缓转头看向镜头，眨眼。"></textarea>
+          <span class="counter"><span id="promptLen">0</span> / 2000</span>
+        </label>
+
+        <h3>快速插入运镜指令</h3>
+        <div id="cameraChips" class="chips"></div>
+        <p class="hint-sm">组合使用：同一组 [] 内用逗号分隔可同时生效。顺序生效：在 prompt 中前后出现依次执行。</p>
+
+        <h2>3. 模型与参数</h2>
+        <div class="row two-col">
+          <label class="field">
+            <span>模型</span>
+            <select id="model"></select>
+          </label>
+          <label class="field">
+            <span>分辨率</span>
+            <select id="resolution">
+              <option value="512P">512P</option>
+              <option value="720P">720P</option>
+              <option value="768P" selected>768P</option>
+              <option value="1080P">1080P</option>
+            </select>
+          </label>
+        </div>
+        <div class="row two-col">
+          <label class="field">
+            <span>时长（秒）</span>
+            <select id="duration">
+              <option value="6" selected>6</option>
+              <option value="10">10</option>
+            </select>
+          </label>
+          <label class="field checkbox">
+            <input type="checkbox" id="promptOptimizer" checked />
+            <span>自动优化 Prompt</span>
+          </label>
+        </div>
+        <div class="row two-col">
+          <label class="field checkbox">
+            <input type="checkbox" id="fastPretreatment" />
+            <span>快速预处理 (Hailuo 系列)</span>
+          </label>
+          <label class="field checkbox">
+            <input type="checkbox" id="aigcWatermark" />
+            <span>添加 AIGC 水印</span>
+          </label>
+        </div>
+
+        <button id="submitBtn" class="primary-btn">🎬 生成视频</button>
+      </section>
+
+      <!-- RIGHT: result -->
+      <section class="panel result-panel">
+        <h2>生成结果</h2>
+        <div id="resultBox" class="result-box empty">
+          <div class="empty-state">
+            <div class="big-icon">🎞️</div>
+            <div>填写左侧参数，点击"生成视频"开始。</div>
+          </div>
+        </div>
+
+        <div id="taskIdLine" class="task-id hidden">
+          任务 ID: <code id="taskIdCode"></code>
+        </div>
+
+        <h2 style="margin-top:2rem;">任务历史</h2>
+        <div id="history" class="history">
+          <div class="hint-sm" style="padding:1rem;">暂无任务</div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      由 <a href="https://platform.minimaxi.com" target="_blank">MiniMax 开放平台</a> 提供能力 ·
+      通过 <code>POST /v1/video_generation</code> 调用
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
