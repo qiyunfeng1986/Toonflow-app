@@ -75,6 +75,26 @@ export default (toolCpnfig: ToolConfig) => {
         return planData[key] ?? "无数据";
       },
     }),
+    set_planData: tool({
+      description: "保存工作区数据",
+      inputSchema: jsonSchema<{ key: keyof planData; value: string }>(
+        z
+          .object({
+            key: keySchema.describe("数据key"),
+            value: z.string().describe("要保存的数据内容"),
+          })
+          .toJSONSchema(),
+      ),
+      execute: async ({ key, value }) => {
+        console.log("[tools] set_planData", key);
+        const thinking = msg.thinking(`正在保存${planDataKeyLabels[key]}...`);
+        const res: any = await new Promise((resolve) => socket.emit("setPlanData", { key, value }, (res: any) => resolve(res)));
+        thinking.appendText(`保存${planDataKeyLabels[key]}成功`);
+        thinking.updateTitle(`保存${planDataKeyLabels[key]}完成`);
+        thinking.complete();
+        return res?.success ? "保存成功" : "保存失败";
+      },
+    }),
     get_novel_text: tool({
       description: "获取小说章节原始文本内容",
       inputSchema: jsonSchema<{ chapterIndex: string }>(

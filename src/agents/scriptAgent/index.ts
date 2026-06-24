@@ -100,6 +100,7 @@ function createSubAgent(parentCtx: AgentContext) {
     memoryKey,
     tools: extraTools,
     messages,
+    saveToKey,
   }: {
     key: `${string}:${string}`;
     prompt: string;
@@ -108,6 +109,7 @@ function createSubAgent(parentCtx: AgentContext) {
     memoryKey: string;
     tools?: Record<string, any>;
     messages?: { role: "user" | "assistant" | "system"; content: string }[];
+    saveToKey?: "storySkeleton" | "adaptationStrategy" | "script";
   }) {
     parentCtx.msg.complete();
     const subMsg = resTool.newMessage("assistant", name);
@@ -126,6 +128,25 @@ function createSubAgent(parentCtx: AgentContext) {
         name,
         createTime: new Date(subMsg.datetime).getTime(),
       });
+    }
+
+    if (saveToKey && fullResponse.trim()) {
+      try {
+        const xmlTag = saveToKey === "storySkeleton" ? "storySkeleton" : 
+                     saveToKey === "adaptationStrategy" ? "adaptationStrategy" : "script";
+        const regex = new RegExp(`<${xmlTag}>([\\s\\S]*?)</${xmlTag}>`, "i");
+        const match = fullResponse.match(regex);
+        if (match && match[1]) {
+          await new Promise((resolve) => {
+            resTool.socket.emit("setPlanData", { key: saveToKey, value: match[1].trim() }, (res: any) => {
+              console.log(`[runAgent] 保存 ${saveToKey}:`, res?.success ? "成功" : "失败");
+              resolve(res);
+            });
+          });
+        }
+      } catch (e) {
+        console.error("[runAgent] 保存工作区数据失败:", e);
+      }
     }
 
     parentCtx.msg = resTool.newMessage("assistant", "视频策划");
@@ -154,6 +175,7 @@ function createSubAgent(parentCtx: AgentContext) {
         name: "编剧",
         memoryKey: "assistant:execution:storySkeleton",
         messages: [{ role: "user", content: prompt + formatPrompt }],
+        saveToKey: "storySkeleton",
       });
     },
   });
@@ -174,6 +196,7 @@ function createSubAgent(parentCtx: AgentContext) {
         name: "编剧",
         memoryKey: "assistant:execution:adaptationStrategy",
         messages: [{ role: "user", content: prompt + formatPrompt }],
+        saveToKey: "adaptationStrategy",
       });
     },
   });

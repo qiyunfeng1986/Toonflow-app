@@ -87,6 +87,74 @@ export default (nsp: Namespace) => {
       abortController?.abort();
       abortController = null;
     });
+
+    socket.on("getPlanData", async (data: { key: string }, callback) => {
+      const projectId = resTool.data.projectId as number;
+      const { key } = data;
+      
+      try {
+        const row = await u.db("o_agentWorkData").where({ projectId, key: "scriptAgent" }).first();
+        let workData: any = {};
+        
+        if (!row) {
+          workData = {
+            storySkeleton: "",
+            adaptationStrategy: "",
+          };
+          await u.db("o_agentWorkData").insert({
+            projectId,
+            key: "scriptAgent",
+            data: JSON.stringify(workData),
+          });
+        } else {
+          workData = JSON.parse(row.data ?? "{}");
+        }
+        
+        if (key === "script") {
+          const scripts = await u.db("o_script").where({ projectId }).select("id", "name", "content");
+          workData.script = scripts;
+        }
+        
+        callback?.({ success: true, data: workData, [key]: workData[key] ?? "" });
+      } catch (err: any) {
+        console.error("[scriptAgent] getPlanData error:", err.message);
+        callback?.({ success: false, error: err.message });
+      }
+    });
+
+    socket.on("setPlanData", async (data: { key: string; value: string }, callback) => {
+      const projectId = resTool.data.projectId as number;
+      const { key, value } = data;
+      
+      try {
+        let row = await u.db("o_agentWorkData").where({ projectId, key: "scriptAgent" }).first();
+        let workData: any;
+        
+        if (!row) {
+          workData = {
+            storySkeleton: "",
+            adaptationStrategy: "",
+          };
+          workData[key] = value;
+          await u.db("o_agentWorkData").insert({
+            projectId,
+            key: "scriptAgent",
+            data: JSON.stringify(workData),
+          });
+        } else {
+          workData = JSON.parse(row.data ?? "{}");
+          workData[key] = value;
+          await u.db("o_agentWorkData")
+            .where({ id: row.id })
+            .update({ data: JSON.stringify(workData) });
+        }
+        
+        callback?.({ success: true });
+      } catch (err: any) {
+        console.error("[scriptAgent] setPlanData error:", err.message);
+        callback?.({ success: false, error: err.message });
+      }
+    });
   });
   nsp.on("disconnect", (socket: Socket) => {
     console.log("[scriptAgent] 已断开连接:", socket.id);
