@@ -66,13 +66,33 @@ export default (toolCpnfig: ToolConfig) => {
           .toJSONSchema(),
       ),
       execute: async ({ key }) => {
-        console.log("[tools] get_planData", key);
         const thinking = msg.thinking(`正在获取${planDataKeyLabels[key]}工作区数据...`);
-        const planData: planData = await new Promise((resolve) => socket.emit("getPlanData", { key }, (res: any) => resolve(res)));
-        thinking.appendText(`获取到${planDataKeyLabels[key]}:\n` + planData[key]);
+        
+        const projectId = resTool.data.projectId as number;
+        const row = await u.db("o_agentWorkData").where({ projectId, key: "scriptAgent" }).first();
+        let workData: any = {};
+        
+        if (!row) {
+          workData = { storySkeleton: "", adaptationStrategy: "" };
+          await u.db("o_agentWorkData").insert({
+            projectId,
+            key: "scriptAgent",
+            data: JSON.stringify(workData),
+          });
+        } else {
+          workData = JSON.parse(row.data ?? "{}");
+        }
+        
+        if (key === "script") {
+          const scripts = await u.db("o_script").where({ projectId }).select("id", "name", "content");
+          workData.script = scripts;
+        }
+        
+        const value = workData[key] ?? "";
+        thinking.appendText(`获取到${planDataKeyLabels[key]}:\n` + (typeof value === "string" ? value : JSON.stringify(value)));
         thinking.updateTitle(`获取${planDataKeyLabels[key]}完成`);
         thinking.complete();
-        return planData[key] ?? "无数据";
+        return typeof value === "string" ? value : JSON.stringify(value);
       },
     }),
     set_planData: tool({
@@ -86,13 +106,32 @@ export default (toolCpnfig: ToolConfig) => {
           .toJSONSchema(),
       ),
       execute: async ({ key, value }) => {
-        console.log("[tools] set_planData", key);
         const thinking = msg.thinking(`正在保存${planDataKeyLabels[key]}...`);
-        const res: any = await new Promise((resolve) => socket.emit("setPlanData", { key, value }, (res: any) => resolve(res)));
+        
+        const projectId = resTool.data.projectId as number;
+        let row = await u.db("o_agentWorkData").where({ projectId, key: "scriptAgent" }).first();
+        let workData: any;
+        
+        if (!row) {
+          workData = { storySkeleton: "", adaptationStrategy: "" };
+          workData[key] = value;
+          await u.db("o_agentWorkData").insert({
+            projectId,
+            key: "scriptAgent",
+            data: JSON.stringify(workData),
+          });
+        } else {
+          workData = JSON.parse(row.data ?? "{}");
+          workData[key] = value;
+          await u.db("o_agentWorkData")
+            .where({ id: row.id })
+            .update({ data: JSON.stringify(workData) });
+        }
+        
         thinking.appendText(`保存${planDataKeyLabels[key]}成功`);
         thinking.updateTitle(`保存${planDataKeyLabels[key]}完成`);
         thinking.complete();
-        return res?.success ? "保存成功" : "保存失败";
+        return "保存成功";
       },
     }),
     get_novel_text: tool({

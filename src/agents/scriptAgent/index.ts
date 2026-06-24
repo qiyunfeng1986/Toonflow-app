@@ -137,12 +137,28 @@ function createSubAgent(parentCtx: AgentContext) {
         const regex = new RegExp(`<${xmlTag}>([\\s\\S]*?)</${xmlTag}>`, "i");
         const match = fullResponse.match(regex);
         if (match && match[1]) {
-          await new Promise((resolve) => {
-            resTool.socket.emit("setPlanData", { key: saveToKey, value: match[1].trim() }, (res: any) => {
-              console.log(`[runAgent] 保存 ${saveToKey}:`, res?.success ? "成功" : "失败");
-              resolve(res);
+          const content = match[1].trim();
+          const projectId = resTool.data.projectId as number;
+          let row = await u.db("o_agentWorkData").where({ projectId, key: "scriptAgent" }).first();
+          let workData: any;
+          
+          if (!row) {
+            workData = { storySkeleton: "", adaptationStrategy: "" };
+            workData[saveToKey] = content;
+            await u.db("o_agentWorkData").insert({
+              projectId,
+              key: "scriptAgent",
+              data: JSON.stringify(workData),
             });
-          });
+          } else {
+            workData = JSON.parse(row.data ?? "{}");
+            workData[saveToKey] = content;
+            await u.db("o_agentWorkData")
+              .where({ id: row.id })
+              .update({ data: JSON.stringify(workData) });
+          }
+          
+          console.log(`[runAgent] 保存 ${saveToKey} 成功，长度: ${content.length}`);
         }
       } catch (e) {
         console.error("[runAgent] 保存工作区数据失败:", e);
