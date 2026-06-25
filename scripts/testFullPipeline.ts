@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 import jwt from "jsonwebtoken";
 import * as fs from "fs";
 
-const TOKEN_KEY = "2f35520d";
+const TOKEN_KEY = "e7cfe953";
 const PROJECT_ID = 1782322991;
 const ISOLATION_KEY = "test-pipeline-full-v2";
 
