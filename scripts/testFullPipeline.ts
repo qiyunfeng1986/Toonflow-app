@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 import * as fs from "fs";
 
 const TOKEN_KEY = "e7cfe953";
-const PROJECT_ID = 1782322991;
-const ISOLATION_KEY = "test-pipeline-full-v2";
+const PROJECT_ID = 1782373002335;
+const ISOLATION_KEY = "test-pipeline-full-v4";
 
 async function main() {
   console.log("生成 JWT token...");
@@ -50,14 +50,17 @@ async function main() {
       
       // 自动回复逻辑
       setTimeout(() => {
-        if (currentText.includes("计划拆分为几集") && currentText.includes("每集大约几分钟")) {
+        if (
+          (currentText.includes("集数") && currentText.includes("单集时长")) ||
+          (currentText.includes("计划拆分为几集") && currentText.includes("每集大约几分钟"))
+        ) {
           // 阶段0: 回复项目参数
           console.log("\n🤖 自动回复: 项目参数");
           stage = 1;
           socket.emit("chat", { 
             content: "3集，每集3分钟，覆盖第1章，竖屏9:16，仙侠穿越风格，前2集免费第3集付费" 
           });
-        } else if (currentText.includes("审核已通过") && currentText.includes("是否进入下一阶段")) {
+        } else if (currentText.includes("审核") && currentText.includes("是否进入下一阶段")) {
           if (stage === 1) {
             // 故事骨架完成，进入改编策略
             console.log("\n🤖 自动回复: 进入改编策略阶段");
